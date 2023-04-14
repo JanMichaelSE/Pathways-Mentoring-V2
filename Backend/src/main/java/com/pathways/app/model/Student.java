@@ -16,7 +16,6 @@ public class Student {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
     private String phone;
 
     @Column(nullable = false)
@@ -24,10 +23,8 @@ public class Student {
 
     private Date graduationDate;
 
-    @Column(nullable = false)
     private String gpa;
 
-    @Column(nullable = false)
     private String institution;
 
     @Column(nullable = false)
@@ -161,5 +158,13 @@ public class Student {
 
     public void setLastModified(Date lastModified) {
         this.lastModified = lastModified;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

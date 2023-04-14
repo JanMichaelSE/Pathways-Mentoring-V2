@@ -1,8 +1,10 @@
 package com.pathways.app.controller;
 
 import com.pathways.app.dto.UserDTO;
+import com.pathways.app.model.Student;
 import com.pathways.app.model.User;
 import com.pathways.app.payload.LoginRequest;
+import com.pathways.app.payload.RegisterStudentRequest;
 import com.pathways.app.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping
+@RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired
@@ -29,7 +31,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup/admin")
-    public @ResponseBody UserDTO registerAdmin(@RequestBody User user) {
+    public @ResponseBody UserDTO registerAdmin(@Valid @RequestBody User user) {
         return authService.registerAdmin(user);
     }
 
@@ -39,12 +41,11 @@ public class AuthController {
 //        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 //    }
 
+    @PostMapping("/signup/student")
+    public @ResponseBody Student registerStudent(@Valid @RequestBody RegisterStudentRequest registerStudentRequest) {
+        return authService.registerStudent(registerStudentRequest);
+    }
 
-//    @PostMapping("/signup/student")
-//    public ResponseEntity<User> registerStudent(@RequestBody User user) {
-//        User savedUser = authService.registerStudent(user);
-//        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
-//    }
 //
 //    @PostMapping("/signup/mentor")
 //    public ResponseEntity<User> registerMentor(@RequestBody User user) {
