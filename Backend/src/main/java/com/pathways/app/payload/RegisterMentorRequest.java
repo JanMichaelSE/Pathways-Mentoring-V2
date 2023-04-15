@@ -1,36 +1,32 @@
-package com.pathways.app.model;
+package com.pathways.app.payload;
 
-import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
-import java.util.Date;
-
-@Entity
-public class Mentor {
-
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
-    @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
+public class RegisterMentorRequest {
+    @Email(message = "Please enter a valid email address.")
+    @NotBlank(message = "Email is required.")
     private String email;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Password is required.")
+    private String password;
+
+    @NotBlank(message = "Must provide a name for mentor.")
+    private String name;
+
+    @NotBlank(message = "Must provide phone number for mentor.")
     private String phone;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Must provide gender.")
     private String gender;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Must provide department for mentor.")
     private String department;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Must provide academic degree for mentor.")
     private String academicDegree;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Must provide faculty status for mentor.")
     private String facultyStatus;
 
     private String office;
@@ -43,22 +39,20 @@ public class Mentor {
 
     private String profilePicture;
 
-    @Column(nullable = false)
-    private Date createdDate = new Date();
-
-    @Column(nullable = false)
-    private Date lastModified = new Date();
-
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    public Long getId() {
-        return id;
+    public String getEmail() {
+        return email;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getName() {
@@ -67,14 +61,6 @@ public class Mentor {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getPhone() {
@@ -105,16 +91,16 @@ public class Mentor {
         return academicDegree;
     }
 
+    public void setAcademicDegree(String academicDegree) {
+        this.academicDegree = academicDegree;
+    }
+
     public String getFacultyStatus() {
         return facultyStatus;
     }
 
     public void setFacultyStatus(String facultyStatus) {
         this.facultyStatus = facultyStatus;
-    }
-
-    public void setAcademicDegree(String academicDegree) {
-        this.academicDegree = academicDegree;
     }
 
     public String getOffice() {
@@ -155,29 +141,5 @@ public class Mentor {
 
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
-    }
-
-    public Date getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public Date getLastModified() {
-        return lastModified;
-    }
-
-    public void setLastModified(Date lastModified) {
-        this.lastModified = lastModified;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 }

@@ -1,9 +1,11 @@
 package com.pathways.app.controller;
 
 import com.pathways.app.dto.UserDTO;
+import com.pathways.app.model.Mentor;
 import com.pathways.app.model.Student;
 import com.pathways.app.model.User;
 import com.pathways.app.payload.LoginRequest;
+import com.pathways.app.payload.RegisterMentorRequest;
 import com.pathways.app.payload.RegisterStudentRequest;
 import com.pathways.app.service.AuthService;
 import jakarta.validation.Valid;
@@ -46,13 +48,12 @@ public class AuthController {
         return authService.registerStudent(registerStudentRequest);
     }
 
-//
-//    @PostMapping("/signup/mentor")
-//    public ResponseEntity<User> registerMentor(@RequestBody User user) {
-//        User savedUser = authService.registerMentor(user);
-//        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
-//    }
-//
+
+    @PostMapping("/signup/mentor")
+    public @ResponseBody Mentor registerMentor(@Valid @RequestBody RegisterMentorRequest registerMentorRequest) {
+        return authService.registerMentor(registerMentorRequest);
+    }
+
 //    @PutMapping("/forgotPassword")
 //    public ResponseEntity<Void> forgotPassword(@RequestBody User user) {
 //        authService.forgotPassword(user);
