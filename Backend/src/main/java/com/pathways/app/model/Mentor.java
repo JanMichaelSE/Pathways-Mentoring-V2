@@ -3,7 +3,9 @@ package com.pathways.app.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class Mentor {
@@ -54,6 +56,10 @@ public class Mentor {
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
+
+    @OneToMany(mappedBy = "mentor", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Student> students = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -182,4 +188,13 @@ public class Mentor {
     public void setUser(User user) {
         this.user = user;
     }
+
+    public List<Student> getStudents() {
+        return students;
+    }
+
+    public void setStudents(List<Student> students) {
+        this.students = students;
+    }
 }
+

@@ -51,6 +51,10 @@ public class Student {
     @JsonIgnore
     private User user;
 
+    @ManyToOne
+    @JsonIgnore
+    private Mentor mentor;
+
     public Long getId() {
         return id;
     }
@@ -169,5 +173,13 @@ public class Student {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Mentor getMentor() {
+        return mentor;
+    }
+
+    public void setMentor(Mentor mentor) {
+        this.mentor = mentor;
     }
 }
