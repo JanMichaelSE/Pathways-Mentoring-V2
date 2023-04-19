@@ -1,26 +1,25 @@
 package com.pathways.app.payload;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
-import java.util.Date;
 
-public class RegisterStudentRequest {
-    @Email(message = "Please enter a valid email address.")
-    @NotBlank(message = "Email is required.")
+public class UpdateStudentProfileRequest {
+    @NotNull(message = "Student Id is required to perform the profile update.")
+    private Long id;
+
     private String email;
 
-    @NotBlank(message = "Password is required.")
-    private String password;
+    private String oldPassword;
 
-    @NotBlank(message = "Must provide a name.")
+    private String newPassword;
+
+    private boolean isApproved;
+
     private String name;
 
     private String phone;
 
-    @NotBlank(message = "Must provide gender.")
     private String gender;
 
     private LocalDate graduationDate;
@@ -29,12 +28,22 @@ public class RegisterStudentRequest {
 
     private String institution;
 
-    @NotBlank(message = "Must provide a fieldOfStudy.")
     private String fieldOfStudy;
 
     private boolean hasResearch;
 
     private String profilePicture;
+
+    public UpdateStudentProfileRequest() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getEmail() {
         return email;
@@ -44,20 +53,28 @@ public class RegisterStudentRequest {
         this.email = email;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getOldPassword() {
+        return oldPassword;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setOldPassword(String oldPassword) {
+        this.oldPassword = oldPassword;
     }
 
-    public String getPassword() {
-        return password;
+    public String getNewPassword() {
+        return newPassword;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
+    }
+
+    public boolean isApproved() {
+        return isApproved;
+    }
+
+    public void setApproved(boolean approved) {
+        isApproved = approved;
     }
 
     public String getName() {
@@ -66,6 +83,14 @@ public class RegisterStudentRequest {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getGender() {

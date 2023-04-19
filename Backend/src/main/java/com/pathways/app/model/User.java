@@ -10,10 +10,10 @@ import java.util.Date;
 @Table(name = "app_user")
 public class User {
    @Id
-   @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+   @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
-   @Column(nullable = false, length = 150)
+   @Column(nullable = false, length = 150, unique = true)
    private String email;
 
    @Column(nullable = false, length = 65)
@@ -41,11 +41,11 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Mentor mentor;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -111,5 +111,21 @@ public class User {
 
     public void setLastModified(Date lastModified) {
         this.lastModified = lastModified;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }

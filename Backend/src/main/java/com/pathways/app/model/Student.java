@@ -1,7 +1,9 @@
 package com.pathways.app.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -13,7 +15,7 @@ public class Student {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 150, unique = true)
     private String email;
 
     private String phone;
@@ -21,7 +23,7 @@ public class Student {
     @Column(nullable = false)
     private String gender;
 
-    private Date graduationDate;
+    private LocalDate graduationDate;
 
     private String gpa;
 
@@ -46,6 +48,7 @@ public class Student {
 
     @OneToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
     public Long getId() {
@@ -88,11 +91,11 @@ public class Student {
         this.gender = gender;
     }
 
-    public Date getGraduationDate() {
+    public LocalDate getGraduationDate() {
         return graduationDate;
     }
 
-    public void setGraduationDate(Date graduationDate) {
+    public void setGraduationDate(LocalDate graduationDate) {
         this.graduationDate = graduationDate;
     }
 

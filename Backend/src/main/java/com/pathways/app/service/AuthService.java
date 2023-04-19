@@ -1,19 +1,23 @@
 package com.pathways.app.service;
 
 import com.pathways.app.dto.UserDTO;
+import com.pathways.app.exception.EmailAlreadyUsedException;
 import com.pathways.app.exception.UserNotFoundException;
+import com.pathways.app.exception.UserPasswordDoesNotMatchException;
 import com.pathways.app.model.Mentor;
 import com.pathways.app.model.Student;
 import com.pathways.app.model.User;
-import com.pathways.app.payload.LoginRequest;
 import com.pathways.app.payload.RegisterMentorRequest;
 import com.pathways.app.payload.RegisterStudentRequest;
 import com.pathways.app.repository.MentorRepository;
 import com.pathways.app.repository.StudentRepository;
 import com.pathways.app.repository.UserRepository;
 import com.pathways.app.util.UserMapper;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -28,20 +32,28 @@ public class AuthService {
     private MentorRepository mentorRepository;
 
     public UserDTO login(String email, String password) {
-        User user = userRepository.findByEmail(email);
+        Optional<User> user = userRepository.findByEmail(email);
 
-        if (user == null) {
+        if (user.isPresent() == false) {
             throw new UserNotFoundException("User not found");
         }
 
-        if (user.getPassword().equals(password) == false) {
-            return new UserDTO();
+        boolean doPasswordsMatch = BCrypt.checkpw(password, user.get().getPassword());
+        if (doPasswordsMatch == false) {
+            throw new UserPasswordDoesNotMatchException("Provided password does not match.");
         }
 
-        return UserMapper.toDTO(user);
+        return UserMapper.toDTO(user.get());
     }
 
     public UserDTO registerAdmin(User user) {
+
+        Optional<User> doesUserExist = userRepository.findByEmail(user.getEmail());
+        if (doesUserExist.isPresent()) {
+            throw new EmailAlreadyUsedException("The email provided is already taken.");
+        }
+
+        user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
         user.setRole("Admin"); // Default for admin users
         User savedUser = userRepository.save(user);
         return UserMapper.toDTO(savedUser);
@@ -49,9 +61,16 @@ public class AuthService {
 
     public Student registerStudent(RegisterStudentRequest student) {
 
+        Optional<User> doesUserExist = userRepository.findByEmail(student.getEmail());
+        if (doesUserExist.isPresent()) {
+            throw new EmailAlreadyUsedException("The email provided is already taken.");
+        }
+
+        // TODO: Validate the date format is provided in the correct format
+
         User userToSave = new User();
         userToSave.setEmail(student.getEmail());
-        userToSave.setPassword(student.getPassword());
+        userToSave.setPassword(BCrypt.hashpw(student.getPassword(), BCrypt.gensalt()));
         userToSave.setRole("Student");
         User savedUser = userRepository.save(userToSave);
 
@@ -73,9 +92,14 @@ public class AuthService {
 
     public Mentor registerMentor(RegisterMentorRequest mentor) {
 
+        Optional<User> doesUserExist = userRepository.findByEmail(mentor.getEmail());
+        if (doesUserExist.isPresent()) {
+            throw new EmailAlreadyUsedException("The email provided is already taken.");
+        }
+
         User userToSave = new User();
         userToSave.setEmail(mentor.getEmail());
-        userToSave.setPassword(mentor.getPassword());
+        userToSave.setPassword(BCrypt.hashpw(mentor.getPassword(), BCrypt.gensalt()));
         userToSave.setRole("Mentor");
         User savedUser = userRepository.save(userToSave);
 

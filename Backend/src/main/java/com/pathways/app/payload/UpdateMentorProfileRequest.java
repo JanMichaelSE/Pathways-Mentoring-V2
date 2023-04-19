@@ -1,37 +1,29 @@
-package com.pathways.app.model;
+package com.pathways.app.payload;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
-import java.util.Date;
-
-@Entity
-public class Mentor {
-
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+public class UpdateMentorProfileRequest {
+    @NotNull(message = "Mentor Id is required to perform the profile update.")
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false, length = 150, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    private String oldPassword;
+
+    private String newPassword;
+
+    private boolean isApproved;
+
+    private String name;
+
     private String phone;
 
-    @Column(nullable = false)
     private String gender;
 
-    @Column(nullable = false)
     private String department;
 
-    @Column(nullable = false)
     private String academicDegree;
 
-    @Column(nullable = false)
     private String facultyStatus;
 
     private String office;
@@ -44,16 +36,8 @@ public class Mentor {
 
     private String profilePicture;
 
-    @Column(nullable = false)
-    private Date createdDate = new Date();
-
-    @Column(nullable = false)
-    private Date lastModified = new Date();
-
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    @JsonIgnore
-    private User user;
+    public UpdateMentorProfileRequest() {
+    }
 
     public Long getId() {
         return id;
@@ -63,20 +47,44 @@ public class Mentor {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getEmail() {
         return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getOldPassword() {
+        return oldPassword;
+    }
+
+    public void setOldPassword(String oldPassword) {
+        this.oldPassword = oldPassword;
+    }
+
+    public String getNewPassword() {
+        return newPassword;
+    }
+
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
+    }
+
+    public boolean isApproved() {
+        return isApproved;
+    }
+
+    public void setApproved(boolean approved) {
+        isApproved = approved;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPhone() {
@@ -107,16 +115,16 @@ public class Mentor {
         return academicDegree;
     }
 
+    public void setAcademicDegree(String academicDegree) {
+        this.academicDegree = academicDegree;
+    }
+
     public String getFacultyStatus() {
         return facultyStatus;
     }
 
     public void setFacultyStatus(String facultyStatus) {
         this.facultyStatus = facultyStatus;
-    }
-
-    public void setAcademicDegree(String academicDegree) {
-        this.academicDegree = academicDegree;
     }
 
     public String getOffice() {
@@ -157,29 +165,5 @@ public class Mentor {
 
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
-    }
-
-    public Date getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public Date getLastModified() {
-        return lastModified;
-    }
-
-    public void setLastModified(Date lastModified) {
-        this.lastModified = lastModified;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 }
