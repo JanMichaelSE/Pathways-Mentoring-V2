@@ -27,6 +27,11 @@ public class StudentController {
         return studentService.getStudentByUserId(userId);
     }
 
+    @GetMapping("/mentor/{mentorId}")
+    public List<Student> getAllStudentsByMentor(@PathVariable Long mentorId) {
+        return studentService.getStudentsByMentorId(mentorId);
+    }
+
     @PutMapping("/request-mentorship")
     public String requestStudentMentorship(@Valid @RequestBody StudentMentorshipRequest studentMentorshipRequest) {
         return studentService.requestStudentMentorship(studentMentorshipRequest.getMentorEmail(), studentMentorshipRequest.getId());

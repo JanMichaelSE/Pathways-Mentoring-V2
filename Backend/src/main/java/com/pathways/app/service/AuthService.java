@@ -34,7 +34,7 @@ public class AuthService {
     public UserDTO login(String email, String password) {
         Optional<User> user = userRepository.findByEmail(email);
 
-        if (user.isPresent() == false) {
+        if (user.isEmpty()) {
             throw new UserNotFoundException("User not found");
         }
 
@@ -66,11 +66,10 @@ public class AuthService {
             throw new EmailAlreadyUsedException("The email provided is already taken.");
         }
 
-        // TODO: Validate the date format is provided in the correct format
-
         User userToSave = new User();
         userToSave.setEmail(student.getEmail());
         userToSave.setPassword(BCrypt.hashpw(student.getPassword(), BCrypt.gensalt()));
+        userToSave.setApproved(true);
         userToSave.setRole("Student");
         User savedUser = userRepository.save(userToSave);
 
@@ -100,6 +99,7 @@ public class AuthService {
         User userToSave = new User();
         userToSave.setEmail(mentor.getEmail());
         userToSave.setPassword(BCrypt.hashpw(mentor.getPassword(), BCrypt.gensalt()));
+        userToSave.setApproved(false);
         userToSave.setRole("Mentor");
         User savedUser = userRepository.save(userToSave);
 

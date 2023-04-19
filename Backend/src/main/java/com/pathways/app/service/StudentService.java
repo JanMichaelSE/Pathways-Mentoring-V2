@@ -34,6 +34,10 @@ public class StudentService {
         return student.get();
     }
 
+    public List<Student> getStudentsByMentorId(Long mentorId) {
+        return studentRepository.findByMentorId(mentorId);
+    }
+
     public String requestStudentMentorship(String mentorEmail, Long studentId) {
         Optional<Student> student = studentRepository.findById(studentId);
         if (student.isEmpty()) {
