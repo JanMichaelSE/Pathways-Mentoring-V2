@@ -33,7 +33,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup/admin")
-    public @ResponseBody UserDTO registerAdmin(@Valid @RequestBody User user) {
+    public UserDTO registerAdmin(@Valid @RequestBody User user) {
         return authService.registerAdmin(user);
     }
 
@@ -44,13 +44,13 @@ public class AuthController {
 //    }
 
     @PostMapping("/signup/student")
-    public @ResponseBody Student registerStudent(@Valid @RequestBody RegisterStudentRequest registerStudentRequest) {
+    public Student registerStudent(@Valid @RequestBody RegisterStudentRequest registerStudentRequest) {
         return authService.registerStudent(registerStudentRequest);
     }
 
 
     @PostMapping("/signup/mentor")
-    public @ResponseBody Mentor registerMentor(@Valid @RequestBody RegisterMentorRequest registerMentorRequest) {
+    public Mentor registerMentor(@Valid @RequestBody RegisterMentorRequest registerMentorRequest) {
         return authService.registerMentor(registerMentorRequest);
     }
 

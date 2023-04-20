@@ -1,20 +1,21 @@
 package com.pathways.app.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pathways.app.dto.UserDTO;
 import com.pathways.app.model.Mentor;
 import com.pathways.app.model.Student;
 import com.pathways.app.model.User;
 import com.pathways.app.payload.UpdateAdminProfileRequest;
+import com.pathways.app.repository.MentorRepository;
+import com.pathways.app.repository.StudentRepository;
+import com.pathways.app.repository.UserRepository;
 import com.pathways.app.service.ProfileService;
-import com.pathways.app.util.UserMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,84 +24,95 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import static org.mockito.BDDMockito.given;
-
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.AUTO_CONFIGURED)
 public class ProfileControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-    @MockBean
+    @Autowired
     private ProfileService profileService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private StudentRepository studentRepository;
+    @Autowired
+    private MentorRepository mentorRepository;
     @Autowired
     private ObjectMapper objectMapper;
 
-    private User user;
-    @BeforeEach
-    void setUp() {
-        user = new User();
-        user.setId("Test1");
-        user.setEmail("test@gmail.com");
-        user.setPassword("TestPassword1234");
-        user.setApproved(true);
-        user.setRole("N/A");
-    }
-
     @Test
     public void testGetAdminProfile() throws Exception {
+        User user = new User();
+        user.setId("Test1");
         user.setEmail("test@gmail.com");
+        String hashedPassword = BCrypt.hashpw("TestPassword1234", BCrypt.gensalt());
+        user.setPassword(hashedPassword);
+        user.setApproved(true);
         user.setRole("Admin");
-        UserDTO userDTO = UserMapper.toDTO(user);
+        User savedUser = userRepository.save(user);
 
-        given(profileService.getAdminProfile("Test1")).willReturn(userDTO);
-
-        mockMvc.perform(get("/api/profile/admin/Test1")
+        // Act & Assert
+        mockMvc.perform(get("/api/profile/admin/{id}", savedUser.getId())
                 .contentType(MediaType.ALL))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("email").value("test@gmail.com"));
+
+        // Clean Up
+        userRepository.deleteById(savedUser.getId());
     }
 
     @Test
     public void testUpdateAdminProfile() throws Exception {
         // Construct Request
+        User user = new User();
+        user.setId("Test1");
+        user.setEmail("test@gmail.com");
+        String hashedPassword = BCrypt.hashpw("TestPassword1234", BCrypt.gensalt());
+        user.setPassword(hashedPassword);
+        user.setApproved(true);
+        user.setRole("Admin");
+        User savedUser = userRepository.save(user);
+
         UpdateAdminProfileRequest updatedUser = new UpdateAdminProfileRequest();
-        updatedUser.setId(user.getId());
+        updatedUser.setId(savedUser.getId());
         updatedUser.setEmail("NewAdmin@gmail.com");
         updatedUser.setNewPassword("ChangedPassword1234");
-        updatedUser.setOldPassword(user.getPassword());
+        updatedUser.setOldPassword("TestPassword1234");
 
-        // Updated User to be returned
-        user.setEmail("NewAdmin@gmail.com");
-        user.setPassword("ChangedPassword1234");
-        UserDTO updatedUserDTO = UserMapper.toDTO(user);
 
-        when(profileService.updateAdminProfile(any(UpdateAdminProfileRequest.class))).thenReturn(updatedUserDTO);
-
+        // Act & Assert
         mockMvc.perform(put("/api/profile/admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedUser)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("email").value("NewAdmin@gmail.com"));
+
+        // Clean Up
+        userRepository.deleteById(savedUser.getId());
     }
 
     @Test
     public void testGetStudentProfile() throws Exception {
-        user.setEmail("student@gmail.com");
-        user.setPassword("TestPassword1234");
+        // Construct Request
+        User user = new User();
+        user.setId("Test1");
+        user.setEmail("test@gmail.com");
+        String hashedPassword = BCrypt.hashpw("TestPassword1234", BCrypt.gensalt());
+        user.setPassword(hashedPassword);
+        user.setApproved(true);
         user.setRole("Student");
+        User savedUser = userRepository.save(user);
 
         Student student = new Student();
-        student.setUser(user);
-        student.setId(123L);
+        student.setUser(savedUser);
         student.setEmail("student@gmail.com");
         student.setName("Jan Montalvo");
         student.setPhone("7877101074");
@@ -113,23 +125,33 @@ public class ProfileControllerTest {
         student.setFieldOfStudy("CS");
         student.setHasResearch(true);
         student.setProfilePicture("Test Photo");
+        Student savedStudent = studentRepository.save(student);
 
-        given(profileService.getStudentProfile(123L)).willReturn(student);
-
-        mockMvc.perform(get("/api/profile/student/123")
+        // Act & Assert
+        mockMvc.perform(get("/api/profile/student/{id}", savedStudent.getId())
                 .contentType(MediaType.ALL))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("email").value("student@gmail.com"))
                 .andExpect(jsonPath("name").value("Jan Montalvo"));
+
+        // Clean Up
+        userRepository.deleteById(savedUser.getId());
+        studentRepository.deleteById(savedStudent.getId());
     }
 
     @Test
     public void testGetMentorProfile() throws Exception {
-        user.setEmail("mentor@gmail.com");
+        User user = new User();
+        user.setId("Test1");
+        user.setEmail("test@gmail.com");
+        String hashedPassword = BCrypt.hashpw("TestPassword1234", BCrypt.gensalt());
+        user.setPassword(hashedPassword);
+        user.setApproved(true);
         user.setRole("Mentor");
+        User savedUser = userRepository.save(user);
 
         Mentor mentor = new Mentor();
-        mentor.setUser(user);
+        mentor.setUser(savedUser);
         mentor.setId(123L);
         mentor.setEmail("mentor@gmail.com");
         mentor.setName("Jan Montalvo");
@@ -143,13 +165,17 @@ public class ProfileControllerTest {
         mentor.setInterests("AI");
         mentor.setDescription("A passionate professor");
         mentor.setProfilePicture("Test Photo");
+        Mentor savedMentor = mentorRepository.save(mentor);
 
-        given(profileService.getMentorProfile(123L)).willReturn(mentor);
-
-        mockMvc.perform(get("/api/profile/mentor/123")
+        // Act & Assert
+        mockMvc.perform(get("/api/profile/mentor/{id}", savedMentor.getId())
                         .contentType(MediaType.ALL))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("email").value("mentor@gmail.com"))
                 .andExpect(jsonPath("name").value("Jan Montalvo"));
+
+        // Clean Up
+        userRepository.deleteById(savedUser.getId());
+        mentorRepository.deleteById(savedMentor.getId());
     }
 }
